@@ -1,19 +1,19 @@
 {
-  "lastRun": "2026-05-12T08:58:17.142Z",
+  "lastRun": "2026-05-12T08:57:10.105Z",
   "projects": [
     {
       "name": "Inventar App",
       "status": "ok",
       "httpStatus": 401,
-      "responseTime": 217,
-      "lastChecked": "2026-05-12T08:58:16.938Z"
+      "responseTime": 172,
+      "lastChecked": "2026-05-12T08:57:10.008Z"
     },
     {
       "name": "Bubensause",
       "status": "ok",
       "httpStatus": 401,
-      "responseTime": 204,
-      "lastChecked": "2026-05-12T08:58:17.142Z"
+      "responseTime": 87,
+      "lastChecked": "2026-05-12T08:57:10.105Z"
     }
   ]
 }
