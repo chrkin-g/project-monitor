@@ -47,5 +47,6 @@ jobs:
             echo "Keine Änderungen an status.json."
           else
             git commit -m "chore: update status.json [skip ci]"
+            git pull --rebase
             git push
           fi
