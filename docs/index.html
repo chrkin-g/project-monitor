@@ -56,8 +56,9 @@
     </div>
 
     <!-- Fußzeile -->
-    <div class="mt-4 pt-4 border-t border-slate-800 text-xs text-slate-600">
-      Datenbank-Ping alle 3 Tage via GitHub Actions · Website-Check direkt im Browser
+    <div class="mt-4 pt-4 border-t border-slate-800 text-xs text-slate-600 flex flex-wrap justify-between gap-2">
+      <span>Datenbank-Ping alle 3 Tage via GitHub Actions · Website-Check direkt im Browser</span>
+      <span id="nextPing">Nächster Ping: —</span>
     </div>
 
   </div>
@@ -197,6 +198,11 @@
 
         document.getElementById('lastRun').textContent =
           data.lastRun ? `Letzter DB-Run: ${formatTimestamp(data.lastRun)}` : 'Noch kein Run';
+
+        if (data.lastRun) {
+          const next = new Date(new Date(data.lastRun).getTime() + 3 * 24 * 60 * 60 * 1000);
+          document.getElementById('nextPing').textContent = `Nächster Ping: ${formatTimestamp(next.toISOString())}`;
+        }
 
         document.getElementById('dbGrid').innerHTML =
           lastProjects.length > 0
