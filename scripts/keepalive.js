@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const PING_TIMEOUT_MS = 10_000;
+const PING_TIMEOUT_MS = 30_000;
 
 // Liest und parst die Projektkonfiguration aus einer JSON-Datei
 export function loadConfig(configPath) {
