@@ -1,36 +1,36 @@
 {
-  "lastRun": "2026-05-12T10:31:10.583Z",
+  "lastRun": "2026-05-12T10:34:06.559Z",
   "projects": [
     {
       "name": "Inventar App",
       "status": "ok",
       "httpStatus": 401,
-      "responseTime": 275,
-      "lastChecked": "2026-05-12T10:31:09.818Z"
+      "responseTime": 198,
+      "lastChecked": "2026-05-12T10:34:05.955Z"
     },
     {
       "name": "App YourStyle",
       "frontendUrl": "https://yourstyle-seven.vercel.app/dashboard",
       "status": "ok",
       "httpStatus": 401,
-      "responseTime": 76,
-      "lastChecked": "2026-05-12T10:31:09.894Z"
+      "responseTime": 26,
+      "lastChecked": "2026-05-12T10:34:05.982Z"
     },
     {
       "name": "Bubensause",
       "frontendUrl": "https://bubensause.de",
       "status": "ok",
       "httpStatus": 401,
-      "responseTime": 161,
-      "lastChecked": "2026-05-12T10:31:10.056Z"
+      "responseTime": 98,
+      "lastChecked": "2026-05-12T10:34:06.080Z"
     },
     {
       "name": "Innomee",
       "frontendUrl": "https://innomee.de",
       "status": "ok",
       "httpStatus": 200,
-      "responseTime": 527,
-      "lastChecked": "2026-05-12T10:31:10.583Z"
+      "responseTime": 479,
+      "lastChecked": "2026-05-12T10:34:06.559Z"
     }
   ]
 }
