@@ -67,6 +67,23 @@ test('pingProject gibt ok-Ergebnis bei HTTP 200 zurück', async (t) => {
   assert.equal(result.error, undefined);
 });
 
+test('pingProject gibt ok-Ergebnis bei HTTP 401 zurück (Server läuft)', async (t) => {
+  t.mock.method(globalThis, 'fetch', async () => ({
+    ok: false,
+    status: 401,
+    statusText: 'Unauthorized'
+  }));
+
+  const result = await pingProject({
+    name: 'Auth-Geschütztes-Projekt',
+    url: 'https://example.com'
+  });
+
+  assert.equal(result.status, 'ok');
+  assert.equal(result.httpStatus, 401);
+  assert.ok(typeof result.responseTime === 'number');
+});
+
 test('pingProject gibt error-Ergebnis bei HTTP 503 zurück', async (t) => {
   t.mock.method(globalThis, 'fetch', async () => ({
     ok: false,

@@ -22,7 +22,8 @@ export async function pingProject(project) {
       signal: AbortSignal.timeout(PING_TIMEOUT_MS)
     });
     const responseTime = Math.round(performance.now() - start);
-    if (response.ok) {
+    // Alles unter 500 gilt als "erreichbar" — auch 401/404 bedeutet, der Server läuft
+    if (response.status < 500) {
       return {
         name: project.name,
         status: 'ok',
