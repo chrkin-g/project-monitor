@@ -135,6 +135,34 @@ test('pingProject sendet Custom-Headers mit', async (t) => {
   assert.equal(capturedInit.headers.apikey, 'KEY');
 });
 
+test('pingProject gibt frontendUrl weiter wenn vorhanden', async (t) => {
+  t.mock.method(globalThis, 'fetch', async () => ({
+    ok: true,
+    status: 200,
+    statusText: 'OK'
+  }));
+
+  const result = await pingProject({
+    name: 'Frontend-Projekt',
+    url: 'https://example.com',
+    frontendUrl: 'https://frontend.example.com'
+  });
+
+  assert.equal(result.frontendUrl, 'https://frontend.example.com');
+});
+
+test('pingProject enthält kein frontendUrl wenn nicht konfiguriert', async (t) => {
+  t.mock.method(globalThis, 'fetch', async () => ({
+    ok: true,
+    status: 200,
+    statusText: 'OK'
+  }));
+
+  const result = await pingProject({ name: 'Kein-Frontend', url: 'https://example.com' });
+
+  assert.equal(result.frontendUrl, undefined);
+});
+
 test('pingProject funktioniert ohne headers-Feld', async (t) => {
   t.mock.method(globalThis, 'fetch', async () => ({
     ok: true,

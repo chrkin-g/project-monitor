@@ -22,24 +22,42 @@
       </div>
       <div class="bg-slate-800 rounded-xl px-5 py-3 text-center shrink-0">
         <div id="summary" class="text-2xl font-bold text-green-400">—</div>
-        <div class="text-xs text-slate-500 mt-0.5">Projekte online</div>
+        <div class="text-xs text-slate-500 mt-0.5">Datenbanken online</div>
       </div>
     </div>
 
-    <!-- Fehlermeldung -->
-    <div id="error" class="hidden bg-red-950 border border-red-800 text-red-300 rounded-lg p-4 mb-6 text-sm"></div>
+    <!-- Fehlermeldung Datenbank -->
+    <div id="dbError" class="hidden bg-red-950 border border-red-800 text-red-300 rounded-lg p-4 mb-6 text-sm"></div>
 
-    <!-- Karten-Grid -->
-    <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+    <!-- Datenbank-Status -->
+    <div class="mb-10">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-sm font-semibold text-slate-400 uppercase tracking-widest">Datenbank-Status</h2>
+        <button id="dbRefreshBtn" onclick="refreshDb()"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition-colors text-xs">
+          <span id="dbRefreshIcon">↻</span>
+          <span>Aktualisieren</span>
+        </button>
+      </div>
+      <div id="dbGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+    </div>
+
+    <!-- Website-Status -->
+    <div class="mb-10">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-sm font-semibold text-slate-400 uppercase tracking-widest">Website-Status</h2>
+        <button id="webRefreshBtn" onclick="refreshWebsites()"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition-colors text-xs">
+          <span id="webRefreshIcon">↻</span>
+          <span>Prüfen</span>
+        </button>
+      </div>
+      <div id="webGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+    </div>
 
     <!-- Fußzeile -->
-    <div class="mt-8 pt-4 border-t border-slate-800 flex justify-between items-center text-xs text-slate-600">
-      <span>Keep-Alive · Ping alle 3 Tage via GitHub Actions</span>
-      <button id="refreshBtn" onclick="manualRefresh()"
-        class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition-colors">
-        <span id="refreshIcon">↻</span>
-        <span>Aktualisieren</span>
-      </button>
+    <div class="mt-4 pt-4 border-t border-slate-800 text-xs text-slate-600">
+      Datenbank-Ping alle 3 Tage via GitHub Actions · Website-Check direkt im Browser
     </div>
 
   </div>
@@ -54,8 +72,17 @@
       }).format(new Date(iso));
     }
 
-    // Einzelne Projektkarte rendern
-    function renderCard(project) {
+    // XSS-Schutz
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // Datenbank-Karte rendern
+    function renderDbCard(project) {
       const isOk = project.status === 'ok';
       const borderColor = isOk ? 'border-green-500' : 'border-red-500';
       const badgeBg = isOk ? 'bg-green-950 text-green-400' : 'bg-red-950 text-red-400';
@@ -63,18 +90,11 @@
       const responseTime = project.responseTime != null ? `${project.responseTime} ms` : '— ms';
       const httpStatus = project.httpStatus ?? '—';
       const checkedAt = formatTimestamp(project.lastChecked);
-      const frontendLink = project.frontendUrl
-        ? `<a href="${escapeHtml(project.frontendUrl)}" target="_blank" rel="noopener noreferrer"
-             class="shrink-0 text-xs text-slate-400 hover:text-slate-200 transition-colors" title="Frontend öffnen">↗</a>`
-        : '';
 
       return `
         <div class="bg-slate-800 rounded-xl p-4 border-l-4 ${borderColor}">
           <div class="flex items-start justify-between mb-3 gap-2">
-            <div class="flex items-center gap-2 min-w-0">
-              <span class="font-semibold text-slate-100 text-sm leading-snug truncate">${escapeHtml(project.name)}</span>
-              ${frontendLink}
-            </div>
+            <span class="font-semibold text-slate-100 text-sm leading-snug">${escapeHtml(project.name)}</span>
             <span class="shrink-0 text-xs font-medium px-2 py-0.5 rounded-full ${badgeBg}">${badgeText}</span>
           </div>
           <div class="flex gap-5">
@@ -96,57 +116,142 @@
       `;
     }
 
-    // XSS-Schutz
-    function escapeHtml(str) {
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
+    // Website-Karte rendern (Placeholder während Prüfung läuft)
+    function renderWebCardPending(name, url) {
+      return `
+        <div class="bg-slate-800 rounded-xl p-4 border-l-4 border-slate-600" id="webcard-${btoa(url).replace(/=/g, '')}">
+          <div class="flex items-start justify-between mb-3 gap-2">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="font-semibold text-slate-100 text-sm leading-snug truncate">${escapeHtml(name)}</span>
+              <a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer"
+                class="shrink-0 text-xs text-slate-400 hover:text-slate-200 transition-colors" title="Seite öffnen">↗</a>
+            </div>
+            <span class="shrink-0 text-xs font-medium px-2 py-0.5 rounded-full bg-slate-700 text-slate-400">PRÜFE…</span>
+          </div>
+          <div class="text-xs text-slate-500 truncate">${escapeHtml(url)}</div>
+        </div>
+      `;
     }
 
-    // Status laden und Dashboard aktualisieren
-    async function loadStatus() {
+    function renderWebCardResult(name, url, responseTime, error) {
+      const isOk = !error;
+      const borderColor = isOk ? 'border-green-500' : 'border-red-500';
+      const badgeBg = isOk ? 'bg-green-950 text-green-400' : 'bg-red-950 text-red-400';
+      const badgeText = isOk ? 'ERREICHBAR' : 'FEHLER';
+      const timeText = responseTime != null ? `${responseTime} ms` : '—';
+
+      return `
+        <div class="bg-slate-800 rounded-xl p-4 border-l-4 ${borderColor}">
+          <div class="flex items-start justify-between mb-3 gap-2">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="font-semibold text-slate-100 text-sm leading-snug truncate">${escapeHtml(name)}</span>
+              <a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer"
+                class="shrink-0 text-xs text-slate-400 hover:text-slate-200 transition-colors" title="Seite öffnen">↗</a>
+            </div>
+            <span class="shrink-0 text-xs font-medium px-2 py-0.5 rounded-full ${badgeBg}">${badgeText}</span>
+          </div>
+          <div class="flex gap-5">
+            <div>
+              <div class="text-xs text-slate-500 uppercase tracking-wide">Antwortzeit</div>
+              <div class="text-base font-semibold ${isOk ? 'text-slate-100' : 'text-red-400'}">${timeText}</div>
+            </div>
+            <div class="min-w-0">
+              <div class="text-xs text-slate-500 uppercase tracking-wide">URL</div>
+              <div class="text-xs text-slate-400 mt-1 truncate">${escapeHtml(url)}</div>
+            </div>
+          </div>
+          ${error ? `<div class="mt-2 text-xs text-red-400 truncate">${escapeHtml(error)}</div>` : ''}
+        </div>
+      `;
+    }
+
+    // Einzelne Website direkt vom Browser aus pingen (no-cors → nur Erreichbarkeit)
+    async function pingWebsite(url) {
+      const start = performance.now();
+      try {
+        await fetch(url, { mode: 'no-cors', signal: AbortSignal.timeout(10_000) });
+        return { responseTime: Math.round(performance.now() - start), error: null };
+      } catch (err) {
+        return { responseTime: null, error: err.message };
+      }
+    }
+
+    // Datenbank-Status aus status.json laden
+    let lastProjects = [];
+
+    async function loadDbStatus() {
       try {
         const res = await fetch('./status.json?t=' + Date.now());
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
 
-        document.getElementById('error').classList.add('hidden');
+        document.getElementById('dbError').classList.add('hidden');
 
-        const online = data.projects.filter(p => p.status === 'ok').length;
-        const total = data.projects.length;
+        lastProjects = data.projects ?? [];
+
+        const online = lastProjects.filter(p => p.status === 'ok').length;
+        const total = lastProjects.length;
         const summaryEl = document.getElementById('summary');
         summaryEl.textContent = `${online} / ${total}`;
         summaryEl.className = `text-2xl font-bold ${online === total ? 'text-green-400' : online === 0 ? 'text-red-400' : 'text-yellow-400'}`;
 
         document.getElementById('lastRun').textContent =
-          data.lastRun ? `Letzter Run: ${formatTimestamp(data.lastRun)}` : 'Noch kein Run';
+          data.lastRun ? `Letzter DB-Run: ${formatTimestamp(data.lastRun)}` : 'Noch kein Run';
 
-        document.getElementById('grid').innerHTML =
-          data.projects.length > 0
-            ? data.projects.map(renderCard).join('')
+        document.getElementById('dbGrid').innerHTML =
+          lastProjects.length > 0
+            ? lastProjects.map(renderDbCard).join('')
             : '<p class="text-slate-500 col-span-2 text-sm">Noch keine Projekte konfiguriert.</p>';
 
       } catch (err) {
-        document.getElementById('error').textContent = `Fehler beim Laden: ${err.message}`;
-        document.getElementById('error').classList.remove('hidden');
+        document.getElementById('dbError').textContent = `Fehler beim Laden: ${err.message}`;
+        document.getElementById('dbError').classList.remove('hidden');
       }
     }
 
-    // Manueller Refresh mit kurzem Dreh-Feedback
-    async function manualRefresh() {
-      const icon = document.getElementById('refreshIcon');
-      const btn = document.getElementById('refreshBtn');
-      btn.disabled = true;
-      icon.style.display = 'inline-block';
-      icon.style.animation = 'spin 0.8s linear infinite';
-      await loadStatus();
-      icon.style.animation = '';
-      btn.disabled = false;
+    // Alle Websites live prüfen
+    async function checkWebsites() {
+      const websites = lastProjects.filter(p => p.frontendUrl);
+
+      if (websites.length === 0) {
+        document.getElementById('webGrid').innerHTML =
+          '<p class="text-slate-500 col-span-2 text-sm">Keine Frontend-URLs konfiguriert.</p>';
+        return;
+      }
+
+      // Zuerst alle Karten als "Prüfe..." anzeigen
+      document.getElementById('webGrid').innerHTML =
+        websites.map(p => renderWebCardPending(p.name, p.frontendUrl)).join('');
+
+      // Dann parallel alle Websites pingen und Karten einzeln aktualisieren
+      await Promise.all(websites.map(async (project) => {
+        const { responseTime, error } = await pingWebsite(project.frontendUrl);
+        const cardHtml = renderWebCardResult(project.name, project.frontendUrl, responseTime, error);
+        const id = `webcard-${btoa(project.frontendUrl).replace(/=/g, '')}`;
+        const el = document.getElementById(id);
+        if (el) el.outerHTML = cardHtml;
+      }));
     }
 
-    loadStatus();
+    // Button-Spin-Animation
+    function withSpin(btnId, iconId, fn) {
+      return async () => {
+        const btn = document.getElementById(btnId);
+        const icon = document.getElementById(iconId);
+        btn.disabled = true;
+        icon.style.display = 'inline-block';
+        icon.style.animation = 'spin 0.8s linear infinite';
+        await fn();
+        icon.style.animation = '';
+        btn.disabled = false;
+      };
+    }
+
+    const refreshDb = withSpin('dbRefreshBtn', 'dbRefreshIcon', loadDbStatus);
+    const refreshWebsites = withSpin('webRefreshBtn', 'webRefreshIcon', checkWebsites);
+
+    // Beim Laden: DB-Status sofort, Websites nach DB-Daten
+    loadDbStatus().then(checkWebsites);
   </script>
 
 </body>

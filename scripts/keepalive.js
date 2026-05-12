@@ -23,32 +23,14 @@ export async function pingProject(project) {
     });
     const responseTime = Math.round(performance.now() - start);
     // Alles unter 500 gilt als "erreichbar" — auch 401/404 bedeutet, der Server läuft
+    const base = { name: project.name, ...(project.frontendUrl ? { frontendUrl: project.frontendUrl } : {}) };
     if (response.status < 500) {
-      return {
-        name: project.name,
-        status: 'ok',
-        httpStatus: response.status,
-        responseTime,
-        lastChecked: new Date().toISOString()
-      };
+      return { ...base, status: 'ok', httpStatus: response.status, responseTime, lastChecked: new Date().toISOString() };
     }
-    return {
-      name: project.name,
-      status: 'error',
-      httpStatus: response.status,
-      responseTime: null,
-      lastChecked: new Date().toISOString(),
-      error: `HTTP ${response.status} ${response.statusText}`
-    };
+    return { ...base, status: 'error', httpStatus: response.status, responseTime: null, lastChecked: new Date().toISOString(), error: `HTTP ${response.status} ${response.statusText}` };
   } catch (err) {
-    return {
-      name: project.name,
-      status: 'error',
-      httpStatus: null,
-      responseTime: null,
-      lastChecked: new Date().toISOString(),
-      error: err.message
-    };
+    const base = { name: project.name, ...(project.frontendUrl ? { frontendUrl: project.frontendUrl } : {}) };
+    return { ...base, status: 'error', httpStatus: null, responseTime: null, lastChecked: new Date().toISOString(), error: err.message };
   }
 }
 
