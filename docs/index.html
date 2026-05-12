@@ -170,10 +170,14 @@
     async function pingWebsite(url) {
       const start = performance.now();
       try {
-        await fetch(url, { mode: 'no-cors', signal: AbortSignal.timeout(10_000) });
+        await fetch(url, { mode: 'no-cors', signal: AbortSignal.timeout(30_000) });
         return { responseTime: Math.round(performance.now() - start), error: null };
       } catch (err) {
-        return { responseTime: null, error: err.message };
+        const isTimeout = err.name === 'TimeoutError' || err.name === 'AbortError';
+        const msg = isTimeout
+          ? 'Timeout (>30s) — Server antwortet nicht'
+          : 'Nicht erreichbar — Server blockiert Browser-Abfragen oder offline';
+        return { responseTime: null, error: msg };
       }
     }
 
