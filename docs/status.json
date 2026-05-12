@@ -1,19 +1,33 @@
 {
-  "lastRun": "2026-05-12T08:57:10.105Z",
+  "lastRun": "2026-05-12T10:17:34.342Z",
   "projects": [
     {
       "name": "Inventar App",
       "status": "ok",
       "httpStatus": 401,
-      "responseTime": 172,
-      "lastChecked": "2026-05-12T08:57:10.008Z"
+      "responseTime": 186,
+      "lastChecked": "2026-05-12T10:17:33.751Z"
+    },
+    {
+      "name": "App YourStyle",
+      "status": "ok",
+      "httpStatus": 401,
+      "responseTime": 29,
+      "lastChecked": "2026-05-12T10:17:33.780Z"
     },
     {
       "name": "Bubensause",
       "status": "ok",
       "httpStatus": 401,
-      "responseTime": 87,
-      "lastChecked": "2026-05-12T08:57:10.105Z"
+      "responseTime": 125,
+      "lastChecked": "2026-05-12T10:17:33.905Z"
+    },
+    {
+      "name": "Innomee",
+      "status": "ok",
+      "httpStatus": 200,
+      "responseTime": 437,
+      "lastChecked": "2026-05-12T10:17:34.342Z"
     }
   ]
 }
