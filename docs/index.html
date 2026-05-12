@@ -26,6 +26,19 @@
       </div>
     </div>
 
+    <!-- Website-Status -->
+    <div class="mb-10">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-sm font-semibold text-slate-400 uppercase tracking-widest">Website-Status</h2>
+        <button id="webRefreshBtn" onclick="refreshWebsites()"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition-colors text-xs">
+          <span id="webRefreshIcon">↻</span>
+          <span>Prüfen</span>
+        </button>
+      </div>
+      <div id="webGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+    </div>
+
     <!-- Fehlermeldung Datenbank -->
     <div id="dbError" class="hidden bg-red-950 border border-red-800 text-red-300 rounded-lg p-4 mb-6 text-sm"></div>
 
@@ -40,19 +53,6 @@
         </button>
       </div>
       <div id="dbGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
-    </div>
-
-    <!-- Website-Status -->
-    <div class="mb-10">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-sm font-semibold text-slate-400 uppercase tracking-widest">Website-Status</h2>
-        <button id="webRefreshBtn" onclick="refreshWebsites()"
-          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition-colors text-xs">
-          <span id="webRefreshIcon">↻</span>
-          <span>Prüfen</span>
-        </button>
-      </div>
-      <div id="webGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
     </div>
 
     <!-- Fußzeile -->
@@ -166,18 +166,50 @@
       `;
     }
 
-    // Einzelne Website direkt vom Browser aus pingen (no-cors → nur Erreichbarkeit)
+    // Fallback: favicon.ico per <img> laden — umgeht Sec-Fetch-Dest:empty-Blocks mancher Server
+    function pingViaImage(origin, timeoutMs) {
+      return new Promise((resolve) => {
+        const start = performance.now();
+        const img = new Image();
+        let settled = false;
+        const finish = (ok) => {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timer);
+          resolve({ ok, elapsed: Math.round(performance.now() - start) });
+        };
+        // onerror kann "Server antwortet mit 404" ODER "Netzwerkfehler" bedeuten.
+        // Heuristik: Netzwerkfehler (DNS/refused) kommen in <150ms zurück;
+        // echte HTTP-Antworten brauchen länger → dann als "erreichbar" werten.
+        const timer = setTimeout(() => finish(false), timeoutMs);
+        img.onload = () => finish(true);
+        img.onerror = () => {
+          const elapsed = performance.now() - start;
+          finish(elapsed > 150);
+        };
+        img.src = `${origin}/favicon.ico?_=${Date.now()}`;
+      });
+    }
+
+    // Website pingen: zuerst fetch (no-cors), bei Blockierung Bild-Fallback
     async function pingWebsite(url) {
       const start = performance.now();
+      const origin = new URL(url).origin;
       try {
-        await fetch(url, { mode: 'no-cors', signal: AbortSignal.timeout(30_000) });
+        await fetch(url, { mode: 'no-cors', signal: AbortSignal.timeout(15_000) });
         return { responseTime: Math.round(performance.now() - start), error: null };
-      } catch (err) {
-        const isTimeout = err.name === 'TimeoutError' || err.name === 'AbortError';
-        const msg = isTimeout
-          ? 'Timeout (>30s) — Server antwortet nicht'
-          : 'Nicht erreichbar — Server blockiert Browser-Abfragen oder offline';
-        return { responseTime: null, error: msg };
+      } catch (fetchErr) {
+        const isTimeout = fetchErr.name === 'TimeoutError' || fetchErr.name === 'AbortError';
+        if (isTimeout) {
+          return { responseTime: null, error: 'Timeout — Server antwortet nicht' };
+        }
+        // fetch geblockt → Bild-Fallback versuchen
+        const remaining = 15_000 - Math.round(performance.now() - start);
+        const { ok, elapsed } = await pingViaImage(origin, Math.max(remaining, 5_000));
+        if (ok) {
+          return { responseTime: Math.round(performance.now() - start), error: null };
+        }
+        return { responseTime: null, error: 'Nicht erreichbar' };
       }
     }
 
