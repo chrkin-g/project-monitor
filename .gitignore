@@ -6,3 +6,9 @@ node_modules/
 
 # Brainstorming-Artefakte
 .superpowers/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
