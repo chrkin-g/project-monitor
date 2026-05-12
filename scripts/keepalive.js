@@ -5,6 +5,8 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+const PING_TIMEOUT_MS = 10_000;
+
 // Liest und parst die Projektkonfiguration aus einer JSON-Datei
 export function loadConfig(configPath) {
   const raw = readFileSync(configPath, 'utf-8');
@@ -17,7 +19,7 @@ export async function pingProject(project) {
   try {
     const response = await fetch(project.url, {
       headers: project.headers ?? {},
-      signal: AbortSignal.timeout(10000)
+      signal: AbortSignal.timeout(PING_TIMEOUT_MS)
     });
     const responseTime = Math.round(performance.now() - start);
     if (response.ok) {

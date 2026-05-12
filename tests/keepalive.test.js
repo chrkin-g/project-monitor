@@ -1,5 +1,5 @@
 // tests/keepalive.test.js
-import { test, mock } from 'node:test';
+import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { writeFileSync, mkdirSync, readFileSync, rmSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -152,12 +152,13 @@ test('writeStatus schreibt valides JSON in Zieldatei', () => {
 });
 
 test('writeStatus erstellt fehlendes Verzeichnis', () => {
-  const tmpDir = resolve(tmpdir(), `pm-test-${Date.now()}`, 'tief', 'verschachtelt');
+  const tmpBase = resolve(tmpdir(), `pm-test-${Date.now()}`);
+  const tmpDir = resolve(tmpBase, 'tief', 'verschachtelt');
   const outputPath = resolve(tmpDir, 'status.json');
 
   writeStatus({ lastRun: null, projects: [] }, outputPath);
 
   assert.ok(existsSync(outputPath));
 
-  rmSync(resolve(tmpdir(), `pm-test-${outputPath.split('pm-test-')[1].split('/')[0]}`), { recursive: true });
+  rmSync(tmpBase, { recursive: true });
 });
