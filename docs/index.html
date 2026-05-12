@@ -134,34 +134,35 @@
       `;
     }
 
-    function renderWebCardResult(name, url, responseTime, error) {
-      const isOk = !error;
-      const borderColor = isOk ? 'border-green-500' : 'border-red-500';
-      const badgeBg = isOk ? 'bg-green-950 text-green-400' : 'bg-red-950 text-red-400';
-      const badgeText = isOk ? 'ERREICHBAR' : 'FEHLER';
+    function renderWebCardResult(name, url, responseTime, status) {
+      const cfg = {
+        ok:      { border: 'border-green-500', badge: 'bg-green-950 text-green-400',  label: 'ERREICHBAR',    timeColor: 'text-slate-100', hint: '' },
+        timeout: { border: 'border-red-500',   badge: 'bg-red-950 text-red-400',     label: 'TIMEOUT',       timeColor: 'text-red-400',   hint: 'Server hat nicht innerhalb von 15s geantwortet.' },
+        blocked: { border: 'border-slate-600', badge: 'bg-slate-700 text-slate-400', label: 'NICHT PRÜFBAR', timeColor: 'text-slate-400', hint: 'Browser-Sicherheit verhindert den Check. ↗ zum manuellen Prüfen.' },
+      }[status] ?? cfg.blocked;
       const timeText = responseTime != null ? `${responseTime} ms` : '—';
 
       return `
-        <div class="bg-slate-800 rounded-xl p-4 border-l-4 ${borderColor}">
+        <div class="bg-slate-800 rounded-xl p-4 border-l-4 ${cfg.border}">
           <div class="flex items-start justify-between mb-3 gap-2">
             <div class="flex items-center gap-2 min-w-0">
               <span class="font-semibold text-slate-100 text-sm leading-snug truncate">${escapeHtml(name)}</span>
               <a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer"
                 class="shrink-0 text-xs text-slate-400 hover:text-slate-200 transition-colors" title="Seite öffnen">↗</a>
             </div>
-            <span class="shrink-0 text-xs font-medium px-2 py-0.5 rounded-full ${badgeBg}">${badgeText}</span>
+            <span class="shrink-0 text-xs font-medium px-2 py-0.5 rounded-full ${cfg.badge}">${cfg.label}</span>
           </div>
           <div class="flex gap-5">
             <div>
               <div class="text-xs text-slate-500 uppercase tracking-wide">Antwortzeit</div>
-              <div class="text-base font-semibold ${isOk ? 'text-slate-100' : 'text-red-400'}">${timeText}</div>
+              <div class="text-base font-semibold ${cfg.timeColor}">${timeText}</div>
             </div>
             <div class="min-w-0">
               <div class="text-xs text-slate-500 uppercase tracking-wide">URL</div>
               <div class="text-xs text-slate-400 mt-1 truncate">${escapeHtml(url)}</div>
             </div>
           </div>
-          ${error ? `<div class="mt-2 text-xs text-red-400 truncate">${escapeHtml(error)}</div>` : ''}
+          ${cfg.hint ? `<div class="mt-2 text-xs text-slate-500">${cfg.hint}</div>` : ''}
         </div>
       `;
     }
@@ -192,24 +193,26 @@
     }
 
     // Website pingen: zuerst fetch (no-cors), bei Blockierung Bild-Fallback
+    // Rückgabe: { responseTime, status: 'ok' | 'timeout' | 'blocked' }
     async function pingWebsite(url) {
       const start = performance.now();
       const origin = new URL(url).origin;
       try {
         await fetch(url, { mode: 'no-cors', signal: AbortSignal.timeout(15_000) });
-        return { responseTime: Math.round(performance.now() - start), error: null };
+        return { responseTime: Math.round(performance.now() - start), status: 'ok' };
       } catch (fetchErr) {
         const isTimeout = fetchErr.name === 'TimeoutError' || fetchErr.name === 'AbortError';
         if (isTimeout) {
-          return { responseTime: null, error: 'Timeout — Server antwortet nicht' };
+          return { responseTime: null, status: 'timeout' };
         }
         // fetch geblockt → Bild-Fallback versuchen
         const remaining = 15_000 - Math.round(performance.now() - start);
-        const { ok, elapsed } = await pingViaImage(origin, Math.max(remaining, 5_000));
+        const { ok } = await pingViaImage(origin, Math.max(remaining, 5_000));
         if (ok) {
-          return { responseTime: Math.round(performance.now() - start), error: null };
+          return { responseTime: Math.round(performance.now() - start), status: 'ok' };
         }
-        return { responseTime: null, error: 'Nicht erreichbar' };
+        // Beides gescheitert — Browser kann diese URL nicht prüfen
+        return { responseTime: null, status: 'blocked' };
       }
     }
 
@@ -267,8 +270,8 @@
 
       // Dann parallel alle Websites pingen und Karten einzeln aktualisieren
       await Promise.all(websites.map(async (project) => {
-        const { responseTime, error } = await pingWebsite(project.frontendUrl);
-        const cardHtml = renderWebCardResult(project.name, project.frontendUrl, responseTime, error);
+        const { responseTime, status } = await pingWebsite(project.frontendUrl);
+        const cardHtml = renderWebCardResult(project.name, project.frontendUrl, responseTime, status);
         const id = `webcard-${btoa(project.frontendUrl).replace(/=/g, '')}`;
         const el = document.getElementById(id);
         if (el) el.outerHTML = cardHtml;
