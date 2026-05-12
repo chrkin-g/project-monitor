@@ -1,0 +1,51 @@
+# .github/workflows/keepalive.yml
+name: Projekt Keep-Alive
+
+on:
+  schedule:
+    # Alle 3 Tage um 09:00 UTC (Tage 1, 4, 7, 10, ...)
+    - cron: '0 9 */3 * *'
+  workflow_dispatch:
+    # Manueller Trigger für Tests und bei Bedarf
+
+permissions:
+  contents: write
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Node.js 18 einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Projektkonfiguration aus Secret erstellen
+        env:
+          PROJECTS_CONFIG: ${{ secrets.PROJECTS_CONFIG }}
+        run: |
+          mkdir -p config
+          echo "$PROJECTS_CONFIG" > config/projects.json
+
+      - name: Keep-Alive Script ausführen
+        run: node scripts/keepalive.js
+
+      - name: Git-Benutzer konfigurieren
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Status committen und pushen
+        run: |
+          git add docs/status.json
+          if git diff --staged --quiet; then
+            echo "Keine Änderungen an status.json."
+          else
+            git commit -m "chore: update status.json [skip ci]"
+            git push
+          fi
