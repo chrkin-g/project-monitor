@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projekt Monitor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background-color: #0f172a; }
+  </style>
+</head>
+<body class="min-h-screen text-slate-100 p-4 md:p-8">
+
+  <div class="max-w-4xl mx-auto">
+
+    <!-- Kopfzeile -->
+    <div class="flex items-start justify-between mb-8 gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-slate-100">📡 Projekt Monitor</h1>
+        <p id="lastRun" class="text-sm text-slate-500 mt-1">Lade Status...</p>
+      </div>
+      <div class="bg-slate-800 rounded-xl px-5 py-3 text-center shrink-0">
+        <div id="summary" class="text-2xl font-bold text-green-400">—</div>
+        <div class="text-xs text-slate-500 mt-0.5">Projekte online</div>
+      </div>
+    </div>
+
+    <!-- Fehlermeldung -->
+    <div id="error" class="hidden bg-red-950 border border-red-800 text-red-300 rounded-lg p-4 mb-6 text-sm"></div>
+
+    <!-- Karten-Grid -->
+    <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+
+    <!-- Fußzeile -->
+    <div class="mt-8 pt-4 border-t border-slate-800 flex justify-between text-xs text-slate-600">
+      <span>Keep-Alive · Ping alle 3 Tage via GitHub Actions</span>
+      <span id="refreshTimer">Aktualisiert in 60s</span>
+    </div>
+
+  </div>
+
+  <script>
+    // Zeitstempel ins Deutsche formatieren
+    function formatTimestamp(iso) {
+      if (!iso) return '—';
+      return new Intl.DateTimeFormat('de-DE', {
+        day: '2-digit', month: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+      }).format(new Date(iso));
+    }
+
+    // Einzelne Projektkarte rendern
+    function renderCard(project) {
+      const isOk = project.status === 'ok';
+      const borderColor = isOk ? 'border-green-500' : 'border-red-500';
+      const badgeBg = isOk ? 'bg-green-950 text-green-400' : 'bg-red-950 text-red-400';
+      const badgeText = isOk ? 'ONLINE' : 'FEHLER';
+      const responseTime = project.responseTime != null ? `${project.responseTime} ms` : '— ms';
+      const httpStatus = project.httpStatus ?? '—';
+      const checkedAt = formatTimestamp(project.lastChecked);
+
+      return `
+        <div class="bg-slate-800 rounded-xl p-4 border-l-4 ${borderColor}">
+          <div class="flex items-start justify-between mb-3 gap-2">
+            <span class="font-semibold text-slate-100 text-sm leading-snug">${escapeHtml(project.name)}</span>
+            <span class="shrink-0 text-xs font-medium px-2 py-0.5 rounded-full ${badgeBg}">${badgeText}</span>
+          </div>
+          <div class="flex gap-5">
+            <div>
+              <div class="text-xs text-slate-500 uppercase tracking-wide">Antwortzeit</div>
+              <div class="text-base font-semibold ${isOk ? 'text-slate-100' : 'text-red-400'}">${responseTime}</div>
+            </div>
+            <div>
+              <div class="text-xs text-slate-500 uppercase tracking-wide">HTTP</div>
+              <div class="text-base font-semibold ${isOk ? 'text-slate-100' : 'text-red-400'}">${httpStatus}</div>
+            </div>
+            <div>
+              <div class="text-xs text-slate-500 uppercase tracking-wide">Geprüft</div>
+              <div class="text-xs text-slate-400 mt-1">${checkedAt}</div>
+            </div>
+          </div>
+          ${!isOk && project.error ? `<div class="mt-2 text-xs text-red-400 truncate">${escapeHtml(project.error)}</div>` : ''}
+        </div>
+      `;
+    }
+
+    // XSS-Schutz
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // Status laden und Dashboard aktualisieren
+    async function loadStatus() {
+      try {
+        const res = await fetch('./status.json?t=' + Date.now());
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+
+        document.getElementById('error').classList.add('hidden');
+
+        const online = data.projects.filter(p => p.status === 'ok').length;
+        const total = data.projects.length;
+        const summaryEl = document.getElementById('summary');
+        summaryEl.textContent = `${online} / ${total}`;
+        summaryEl.className = `text-2xl font-bold ${online === total ? 'text-green-400' : online === 0 ? 'text-red-400' : 'text-yellow-400'}`;
+
+        document.getElementById('lastRun').textContent =
+          data.lastRun ? `Letzter Run: ${formatTimestamp(data.lastRun)}` : 'Noch kein Run';
+
+        document.getElementById('grid').innerHTML =
+          data.projects.length > 0
+            ? data.projects.map(renderCard).join('')
+            : '<p class="text-slate-500 col-span-2 text-sm">Noch keine Projekte konfiguriert.</p>';
+
+      } catch (err) {
+        document.getElementById('error').textContent = `Fehler beim Laden: ${err.message}`;
+        document.getElementById('error').classList.remove('hidden');
+      }
+    }
+
+    // Auto-Refresh-Countdown
+    let countdown = 60;
+    function tick() {
+      document.getElementById('refreshTimer').textContent = `Aktualisiert in ${countdown}s`;
+      if (countdown <= 0) {
+        countdown = 60;
+        loadStatus();
+      }
+      countdown--;
+    }
+
+    loadStatus();
+    setInterval(tick, 1000);
+  </script>
+
+</body>
+</html>
