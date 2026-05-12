@@ -16,14 +16,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Repository auschecken
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Node.js 18 einrichten
-        uses: actions/setup-node@v4
+      - name: Node.js 24 einrichten
+        uses: actions/setup-node@v4.4.0
         with:
-          node-version: '18'
+          node-version: '24'
 
       - name: Projektkonfiguration aus Secret erstellen
         env:
