@@ -58,11 +58,18 @@
       const responseTime = project.responseTime != null ? `${project.responseTime} ms` : '— ms';
       const httpStatus = project.httpStatus ?? '—';
       const checkedAt = formatTimestamp(project.lastChecked);
+      const frontendLink = project.frontendUrl
+        ? `<a href="${escapeHtml(project.frontendUrl)}" target="_blank" rel="noopener noreferrer"
+             class="shrink-0 text-xs text-slate-400 hover:text-slate-200 transition-colors" title="Frontend öffnen">↗</a>`
+        : '';
 
       return `
         <div class="bg-slate-800 rounded-xl p-4 border-l-4 ${borderColor}">
           <div class="flex items-start justify-between mb-3 gap-2">
-            <span class="font-semibold text-slate-100 text-sm leading-snug">${escapeHtml(project.name)}</span>
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="font-semibold text-slate-100 text-sm leading-snug truncate">${escapeHtml(project.name)}</span>
+              ${frontendLink}
+            </div>
             <span class="shrink-0 text-xs font-medium px-2 py-0.5 rounded-full ${badgeBg}">${badgeText}</span>
           </div>
           <div class="flex gap-5">
