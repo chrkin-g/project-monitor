@@ -1,0 +1,13 @@
+{
+  "name": "project-monitor",
+  "version": "1.0.0",
+  "description": "Generischer HTTP-Projekt-Monitor mit Keep-Alive und Status-Dashboard",
+  "type": "module",
+  "scripts": {
+    "keepalive": "node scripts/keepalive.js",
+    "test": "node --test tests/"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

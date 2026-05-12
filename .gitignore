@@ -1,0 +1,8 @@
+# Lokale Projektkonfiguration mit echten Keys — niemals committen
+config/projects.json
+
+# Node.js
+node_modules/
+
+# Brainstorming-Artefakte
+.superpowers/

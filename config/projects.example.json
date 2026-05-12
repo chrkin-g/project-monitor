@@ -1,0 +1,13 @@
+[
+  {
+    "name": "Mein Supabase Projekt",
+    "url": "https://xxxxx.supabase.co/rest/v1/",
+    "headers": {
+      "apikey": "REPLACE_WITH_ANON_KEY"
+    }
+  },
+  {
+    "name": "Meine Website",
+    "url": "https://meinedomain.de/health"
+  }
+]
