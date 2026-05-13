@@ -1,36 +1,44 @@
 {
-  "lastRun": "2026-05-12T10:34:06.559Z",
+  "lastRun": "2026-05-13T11:26:05.395Z",
   "projects": [
     {
       "name": "Inventar App",
       "status": "ok",
       "httpStatus": 401,
-      "responseTime": 198,
-      "lastChecked": "2026-05-12T10:34:05.955Z"
+      "responseTime": 247,
+      "lastChecked": "2026-05-13T11:26:02.827Z"
     },
     {
       "name": "App YourStyle",
       "frontendUrl": "https://yourstyle-seven.vercel.app/dashboard",
       "status": "ok",
       "httpStatus": 401,
-      "responseTime": 26,
-      "lastChecked": "2026-05-12T10:34:05.982Z"
+      "responseTime": 34,
+      "lastChecked": "2026-05-13T11:26:02.861Z"
     },
     {
       "name": "Bubensause",
       "frontendUrl": "https://bubensause.de",
       "status": "ok",
       "httpStatus": 401,
-      "responseTime": 98,
-      "lastChecked": "2026-05-12T10:34:06.080Z"
+      "responseTime": 196,
+      "lastChecked": "2026-05-13T11:26:03.058Z"
     },
     {
       "name": "Innomee",
       "frontendUrl": "https://innomee.de",
       "status": "ok",
       "httpStatus": 200,
-      "responseTime": 479,
-      "lastChecked": "2026-05-12T10:34:06.559Z"
+      "responseTime": 458,
+      "lastChecked": "2026-05-13T11:26:03.515Z"
+    },
+    {
+      "name": "InnoMee Marketing Agent",
+      "frontendUrl": "https://tools.kincon.de",
+      "status": "ok",
+      "httpStatus": 200,
+      "responseTime": 1880,
+      "lastChecked": "2026-05-13T11:26:05.395Z"
     }
   ]
 }
