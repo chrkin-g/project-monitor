@@ -46,18 +46,25 @@
     <div class="mb-6">
       <div class="flex items-center justify-between mb-2">
         <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-widest">Datenbank-Status</h2>
-        <button id="dbRefreshBtn" onclick="refreshDb()"
-          class="flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition-colors text-xs">
-          <span id="dbRefreshIcon">↻</span>
-          <span>Aktualisieren</span>
-        </button>
+        <div class="flex items-center gap-2">
+          <button id="pingBtn" onclick="triggerPing()"
+            class="flex items-center gap-1 px-2.5 py-1 rounded-md bg-indigo-900 hover:bg-indigo-800 text-indigo-300 hover:text-indigo-100 transition-colors text-xs">
+            <span id="pingIcon">▶</span>
+            <span id="pingLabel">Ping auslösen</span>
+          </button>
+          <button id="dbRefreshBtn" onclick="refreshDb()"
+            class="flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition-colors text-xs">
+            <span id="dbRefreshIcon">↻</span>
+            <span>Anzeige</span>
+          </button>
+        </div>
       </div>
       <div id="dbGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5"></div>
     </div>
 
     <!-- Fußzeile -->
     <div class="pt-3 border-t border-slate-800 text-xs text-slate-600 flex flex-wrap justify-between gap-2">
-      <span>DB-Ping alle 3 Tage via GitHub Actions · Website-Check im Browser</span>
+      <span>DB-Ping alle 3 Tage via GitHub Actions · Website-Check im Browser · <button onclick="resetToken()" class="underline hover:text-slate-400 transition-colors">Token zurücksetzen</button></span>
       <span id="nextPing">Nächster Ping: —</span>
     </div>
 
@@ -308,6 +315,101 @@
 
     const refreshDb = withSpin('dbRefreshBtn', 'dbRefreshIcon', loadDbStatus);
     const refreshWebsites = withSpin('webRefreshBtn', 'webRefreshIcon', checkWebsites);
+
+    // GitHub Workflow Trigger
+    const REPO = 'chrkin-g/project-monitor';
+    const WORKFLOW = 'keepalive.yml';
+
+    function getToken() {
+      let token = localStorage.getItem('gh_token');
+      if (!token) {
+        token = prompt('GitHub Personal Access Token eingeben\n(Scope: workflow — wird nur lokal im Browser gespeichert):');
+        if (token) localStorage.setItem('gh_token', token.trim());
+      }
+      return token ? token.trim() : null;
+    }
+
+    function resetToken() {
+      localStorage.removeItem('gh_token');
+      alert('Token gelöscht. Beim nächsten Ping wird er neu abgefragt.');
+    }
+
+    function setPingState(icon, label, disabled, spin = false) {
+      const btn = document.getElementById('pingBtn');
+      const iconEl = document.getElementById('pingIcon');
+      const labelEl = document.getElementById('pingLabel');
+      btn.disabled = disabled;
+      iconEl.textContent = icon;
+      iconEl.style.animation = spin ? 'spin 0.8s linear infinite' : '';
+      labelEl.textContent = label;
+    }
+
+    async function pollWorkflow(token, triggeredAt) {
+      for (let i = 0; i < 25; i++) {
+        await new Promise(r => setTimeout(r, 6_000));
+        try {
+          const res = await fetch(
+            `https://api.github.com/repos/${REPO}/actions/workflows/${WORKFLOW}/runs?per_page=5`,
+            { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' } }
+          );
+          const data = await res.json();
+          const run = (data.workflow_runs ?? []).find(r => new Date(r.created_at) >= triggeredAt);
+          if (run?.status === 'completed') return run.conclusion;
+        } catch { /* weiter versuchen */ }
+      }
+      return null;
+    }
+
+    async function triggerPing() {
+      const token = getToken();
+      if (!token) return;
+
+      setPingState('…', 'Starte…', true, false);
+
+      try {
+        const triggeredAt = new Date();
+        const res = await fetch(
+          `https://api.github.com/repos/${REPO}/actions/workflows/${WORKFLOW}/dispatches`,
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Accept': 'application/vnd.github+json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ ref: 'main' })
+          }
+        );
+
+        if (res.status === 401 || res.status === 403) {
+          localStorage.removeItem('gh_token');
+          setPingState('✗', 'Token ungültig', true);
+          setTimeout(() => setPingState('▶', 'Ping auslösen', false), 3_000);
+          return;
+        }
+        if (res.status !== 204) {
+          setPingState('✗', `Fehler (${res.status})`, true);
+          setTimeout(() => setPingState('▶', 'Ping auslösen', false), 3_000);
+          return;
+        }
+
+        setPingState('↻', 'Läuft…', true, true);
+        const conclusion = await pollWorkflow(token, triggeredAt);
+
+        if (conclusion === 'success' || conclusion === 'failure') {
+          setPingState('✓', 'Fertig — lade…', true);
+          await loadDbStatus();
+          await checkWebsites();
+        } else {
+          setPingState('⏳', 'Läuft noch…', true);
+        }
+        setTimeout(() => setPingState('▶', 'Ping auslösen', false), 3_000);
+
+      } catch {
+        setPingState('✗', 'Netzwerkfehler', true);
+        setTimeout(() => setPingState('▶', 'Ping auslösen', false), 3_000);
+      }
+    }
 
     // Beim Laden: DB-Status sofort, Websites nach DB-Daten
     loadDbStatus().then(checkWebsites);
