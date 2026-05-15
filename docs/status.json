@@ -1,13 +1,13 @@
 {
-  "lastRun": "2026-05-15T12:20:06.893Z",
+  "lastRun": "2026-05-15T12:27:53.303Z",
   "projects": [
     {
       "name": "Inventar App",
       "provider": "Supabase",
       "status": "ok",
       "httpStatus": 401,
-      "responseTime": 254,
-      "lastChecked": "2026-05-15T12:19:51.002Z"
+      "responseTime": 172,
+      "lastChecked": "2026-05-15T12:27:47.668Z"
     },
     {
       "name": "App YourStyle",
@@ -15,8 +15,8 @@
       "frontendUrl": "https://yourstyle-seven.vercel.app/dashboard",
       "status": "ok",
       "httpStatus": 401,
-      "responseTime": 63,
-      "lastChecked": "2026-05-15T12:19:51.066Z"
+      "responseTime": 28,
+      "lastChecked": "2026-05-15T12:27:47.697Z"
     },
     {
       "name": "Bubensause",
@@ -24,43 +24,40 @@
       "frontendUrl": "https://bubensause.de",
       "status": "ok",
       "httpStatus": 401,
-      "responseTime": 213,
-      "lastChecked": "2026-05-15T12:19:51.279Z"
+      "responseTime": 119,
+      "lastChecked": "2026-05-15T12:27:47.816Z"
     },
     {
       "name": "Innomee",
       "frontendUrl": "https://innomee.de",
-      "status": "error",
-      "httpStatus": null,
-      "responseTime": null,
-      "lastChecked": "2026-05-15T12:20:01.277Z",
-      "error": "fetch failed"
+      "status": "ok",
+      "httpStatus": 200,
+      "responseTime": 444,
+      "lastChecked": "2026-05-15T12:27:48.260Z"
     },
     {
       "name": "InnoMee Marketing Agent",
       "frontendUrl": "https://tools.kincon.de",
       "status": "ok",
       "httpStatus": 200,
-      "responseTime": 5607,
-      "lastChecked": "2026-05-15T12:20:06.884Z"
+      "responseTime": 3882,
+      "lastChecked": "2026-05-15T12:27:52.142Z"
     },
     {
       "name": "InnoMee-Marketing DB",
       "provider": "Neon",
-      "status": "error",
+      "status": "ok",
       "httpStatus": null,
-      "responseTime": null,
-      "lastChecked": "2026-05-15T12:20:06.890Z",
-      "error": "Error connecting to database: fetch failed"
+      "responseTime": 323,
+      "lastChecked": "2026-05-15T12:27:52.466Z"
     },
     {
       "name": "DesignYOU DB",
       "provider": "Neon",
-      "status": "error",
+      "status": "ok",
       "httpStatus": null,
-      "responseTime": null,
-      "lastChecked": "2026-05-15T12:20:06.892Z",
-      "error": "Error connecting to database: fetch failed"
+      "responseTime": 837,
+      "lastChecked": "2026-05-15T12:27:53.303Z"
     }
   ]
 }
