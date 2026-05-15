@@ -25,12 +25,23 @@ jobs:
         with:
           node-version: '24'
 
+      - name: Abhängigkeiten installieren
+        run: npm ci
+
       - name: Projektkonfiguration aus Secret erstellen
         env:
           PROJECTS_CONFIG: ${{ secrets.PROJECTS_CONFIG }}
         run: |
           mkdir -p config
           echo "$PROJECTS_CONFIG" > config/projects.json
+
+      - name: Neon-Datenbanken aus Secret erstellen (optional)
+        env:
+          NEON_PROJECTS_CONFIG: ${{ secrets.NEON_PROJECTS_CONFIG }}
+        run: |
+          if [ -n "$NEON_PROJECTS_CONFIG" ]; then
+            echo "$NEON_PROJECTS_CONFIG" > config/neon-projects.json
+          fi
 
       - name: Keep-Alive Script ausführen
         id: keepalive

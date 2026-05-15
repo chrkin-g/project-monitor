@@ -2,10 +2,12 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { neon } from '@neondatabase/serverless';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const PING_TIMEOUT_MS = 30_000;
+const NEON_TIMEOUT_MS = 10_000;
 
 // Liest und parst die Projektkonfiguration aus einer JSON-Datei
 export function loadConfig(configPath) {
@@ -34,6 +36,21 @@ export async function pingProject(project) {
   }
 }
 
+// Pingt eine Neon-Datenbank via SELECT 1 und gibt ein Ergebnisobjekt zurück
+export async function pingNeonDatabase(project) {
+  const start = performance.now();
+  try {
+    const sql = neon(project.connectionString);
+    await Promise.race([
+      sql`SELECT 1`,
+      new Promise((_, reject) => setTimeout(() => reject(new Error(`Timeout nach ${NEON_TIMEOUT_MS / 1000}s`)), NEON_TIMEOUT_MS))
+    ]);
+    return { name: project.name, status: 'ok', httpStatus: null, responseTime: Math.round(performance.now() - start), lastChecked: new Date().toISOString() };
+  } catch (err) {
+    return { name: project.name, status: 'error', httpStatus: null, responseTime: null, lastChecked: new Date().toISOString(), error: err.message };
+  }
+}
+
 // Schreibt das Status-Objekt als formatiertes JSON in die Zieldatei
 export function writeStatus(statusData, outputPath) {
   mkdirSync(dirname(outputPath), { recursive: true });
@@ -42,6 +59,7 @@ export function writeStatus(statusData, outputPath) {
 
 async function main() {
   const configPath = resolve(__dirname, '..', 'config', 'projects.json');
+  const neonConfigPath = resolve(__dirname, '..', 'config', 'neon-projects.json');
   const outputPath = resolve(__dirname, '..', 'docs', 'status.json');
 
   let projects;
@@ -57,7 +75,15 @@ async function main() {
     process.exit(1);
   }
 
-  console.log(`Pinge ${projects.length} Projekt(e)...\n`);
+  // Neon-Konfiguration ist optional — kein Fehler wenn nicht vorhanden
+  let neonProjects = [];
+  try {
+    neonProjects = loadConfig(neonConfigPath);
+  } catch {
+    // Keine Neon-Konfiguration vorhanden
+  }
+
+  console.log(`Pinge ${projects.length} HTTP-Endpunkt(e)...\n`);
 
   const results = [];
   for (const project of projects) {
@@ -68,6 +94,19 @@ async function main() {
       ? `OK ${result.httpStatus} (${result.responseTime}ms)`
       : `FEHLER ${result.error}`;
     console.log(statusText);
+  }
+
+  if (neonProjects.length > 0) {
+    console.log(`\nPinge ${neonProjects.length} Neon-Datenbank(en)...\n`);
+    for (const project of neonProjects) {
+      process.stdout.write(`  -> ${project.name} (Neon DB) ... `);
+      const result = await pingNeonDatabase(project);
+      results.push(result);
+      const statusText = result.status === 'ok'
+        ? `OK (${result.responseTime}ms)`
+        : `FEHLER ${result.error}`;
+      console.log(statusText);
+    }
   }
 
   const statusData = {

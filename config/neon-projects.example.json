@@ -1,0 +1,6 @@
+[
+  {
+    "name": "Mein Projekt DB",
+    "connectionString": "postgresql://user:password@ep-xyz.eu-central-1.aws.neon.tech/dbname?sslmode=require"
+  }
+]

@@ -10,54 +10,54 @@
     @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
-<body class="min-h-screen text-slate-100 p-4 md:p-8">
+<body class="min-h-screen text-slate-100 p-3 md:p-5">
 
-  <div class="max-w-4xl mx-auto">
+  <div class="max-w-5xl mx-auto">
 
     <!-- Kopfzeile -->
-    <div class="flex items-start justify-between mb-8 gap-4">
+    <div class="flex items-center justify-between mb-5 gap-3">
       <div>
-        <h1 class="text-2xl font-bold text-slate-100">📡 Projekt Monitor</h1>
-        <p id="lastRun" class="text-sm text-slate-500 mt-1">Lade Status...</p>
+        <h1 class="text-lg font-bold text-slate-100">📡 Projekt Monitor</h1>
+        <p id="lastRun" class="text-xs text-slate-500 mt-0.5">Lade Status...</p>
       </div>
-      <div class="bg-slate-800 rounded-xl px-5 py-3 text-center shrink-0">
-        <div id="summary" class="text-2xl font-bold text-green-400">—</div>
-        <div class="text-xs text-slate-500 mt-0.5">Datenbanken online</div>
+      <div class="bg-slate-800 rounded-lg px-4 py-2 text-center shrink-0">
+        <div id="summary" class="text-xl font-bold text-green-400">—</div>
+        <div class="text-xs text-slate-500">Datenbanken online</div>
       </div>
     </div>
 
     <!-- Website-Status -->
-    <div class="mb-10">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-sm font-semibold text-slate-400 uppercase tracking-widest">Website-Status</h2>
+    <div class="mb-6">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-widest">Website-Status</h2>
         <button id="webRefreshBtn" onclick="refreshWebsites()"
-          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition-colors text-xs">
+          class="flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition-colors text-xs">
           <span id="webRefreshIcon">↻</span>
           <span>Prüfen</span>
         </button>
       </div>
-      <div id="webGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+      <div id="webGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5"></div>
     </div>
 
     <!-- Fehlermeldung Datenbank -->
-    <div id="dbError" class="hidden bg-red-950 border border-red-800 text-red-300 rounded-lg p-4 mb-6 text-sm"></div>
+    <div id="dbError" class="hidden bg-red-950 border border-red-800 text-red-300 rounded-lg p-3 mb-4 text-xs"></div>
 
     <!-- Datenbank-Status -->
-    <div class="mb-10">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-sm font-semibold text-slate-400 uppercase tracking-widest">Datenbank-Status</h2>
+    <div class="mb-6">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-widest">Datenbank-Status</h2>
         <button id="dbRefreshBtn" onclick="refreshDb()"
-          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition-colors text-xs">
+          class="flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition-colors text-xs">
           <span id="dbRefreshIcon">↻</span>
           <span>Aktualisieren</span>
         </button>
       </div>
-      <div id="dbGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+      <div id="dbGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5"></div>
     </div>
 
     <!-- Fußzeile -->
-    <div class="mt-4 pt-4 border-t border-slate-800 text-xs text-slate-600 flex flex-wrap justify-between gap-2">
-      <span>Datenbank-Ping alle 3 Tage via GitHub Actions · Website-Check direkt im Browser</span>
+    <div class="pt-3 border-t border-slate-800 text-xs text-slate-600 flex flex-wrap justify-between gap-2">
+      <span>DB-Ping alle 3 Tage via GitHub Actions · Website-Check im Browser</span>
       <span id="nextPing">Nächster Ping: —</span>
     </div>
 
@@ -88,31 +88,31 @@
       const borderColor = isOk ? 'border-green-500' : 'border-red-500';
       const badgeBg = isOk ? 'bg-green-950 text-green-400' : 'bg-red-950 text-red-400';
       const badgeText = isOk ? 'ONLINE' : 'FEHLER';
-      const responseTime = project.responseTime != null ? `${project.responseTime} ms` : '— ms';
+      const responseTime = project.responseTime != null ? `${project.responseTime} ms` : '—';
       const httpStatus = project.httpStatus ?? '—';
       const checkedAt = formatTimestamp(project.lastChecked);
 
       return `
-        <div class="bg-slate-800 rounded-xl p-4 border-l-4 ${borderColor}">
-          <div class="flex items-start justify-between mb-3 gap-2">
-            <span class="font-semibold text-slate-100 text-sm leading-snug">${escapeHtml(project.name)}</span>
-            <span class="shrink-0 text-xs font-medium px-2 py-0.5 rounded-full ${badgeBg}">${badgeText}</span>
+        <div class="bg-slate-800 rounded-lg p-3 border-l-4 ${borderColor}">
+          <div class="flex items-center justify-between mb-2 gap-2">
+            <span class="font-semibold text-slate-100 text-xs leading-snug truncate">${escapeHtml(project.name)}</span>
+            <span class="shrink-0 text-xs font-medium px-1.5 py-0.5 rounded-full ${badgeBg}">${badgeText}</span>
           </div>
-          <div class="flex gap-5">
+          <div class="flex gap-4 text-xs">
             <div>
-              <div class="text-xs text-slate-500 uppercase tracking-wide">Antwortzeit</div>
-              <div class="text-base font-semibold ${isOk ? 'text-slate-100' : 'text-red-400'}">${responseTime}</div>
+              <div class="text-slate-500">Zeit</div>
+              <div class="font-semibold ${isOk ? 'text-slate-100' : 'text-red-400'}">${responseTime}</div>
             </div>
             <div>
-              <div class="text-xs text-slate-500 uppercase tracking-wide">HTTP</div>
-              <div class="text-base font-semibold ${isOk ? 'text-slate-100' : 'text-red-400'}">${httpStatus}</div>
+              <div class="text-slate-500">HTTP</div>
+              <div class="font-semibold ${isOk ? 'text-slate-100' : 'text-red-400'}">${httpStatus}</div>
             </div>
-            <div>
-              <div class="text-xs text-slate-500 uppercase tracking-wide">Geprüft</div>
-              <div class="text-xs text-slate-400 mt-1">${checkedAt}</div>
+            <div class="min-w-0">
+              <div class="text-slate-500">Geprüft</div>
+              <div class="text-slate-400 truncate">${checkedAt}</div>
             </div>
           </div>
-          ${!isOk && project.error ? `<div class="mt-2 text-xs text-red-400 truncate">${escapeHtml(project.error)}</div>` : ''}
+          ${!isOk && project.error ? `<div class="mt-1.5 text-xs text-red-400 truncate">${escapeHtml(project.error)}</div>` : ''}
         </div>
       `;
     }
@@ -120,14 +120,14 @@
     // Website-Karte rendern (Placeholder während Prüfung läuft)
     function renderWebCardPending(name, url) {
       return `
-        <div class="bg-slate-800 rounded-xl p-4 border-l-4 border-slate-600" id="webcard-${btoa(url).replace(/=/g, '')}">
-          <div class="flex items-start justify-between mb-3 gap-2">
-            <div class="flex items-center gap-2 min-w-0">
-              <span class="font-semibold text-slate-100 text-sm leading-snug truncate">${escapeHtml(name)}</span>
+        <div class="bg-slate-800 rounded-lg p-3 border-l-4 border-slate-600" id="webcard-${btoa(url).replace(/=/g, '')}">
+          <div class="flex items-center justify-between mb-1.5 gap-2">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <span class="font-semibold text-slate-100 text-xs leading-snug truncate">${escapeHtml(name)}</span>
               <a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer"
                 class="shrink-0 text-xs text-slate-400 hover:text-slate-200 transition-colors" title="Seite öffnen">↗</a>
             </div>
-            <span class="shrink-0 text-xs font-medium px-2 py-0.5 rounded-full bg-slate-700 text-slate-400">PRÜFE…</span>
+            <span class="shrink-0 text-xs font-medium px-1.5 py-0.5 rounded-full bg-slate-700 text-slate-400">PRÜFE…</span>
           </div>
           <div class="text-xs text-slate-500 truncate">${escapeHtml(url)}</div>
         </div>
@@ -138,31 +138,31 @@
       const cfg = {
         ok:      { border: 'border-green-500', badge: 'bg-green-950 text-green-400',  label: 'ERREICHBAR',    timeColor: 'text-slate-100', hint: '' },
         timeout: { border: 'border-red-500',   badge: 'bg-red-950 text-red-400',     label: 'TIMEOUT',       timeColor: 'text-red-400',   hint: 'Server hat nicht innerhalb von 15s geantwortet.' },
-        blocked: { border: 'border-slate-600', badge: 'bg-slate-700 text-slate-400', label: 'NICHT PRÜFBAR', timeColor: 'text-slate-400', hint: 'Browser-Sicherheit verhindert den Check. ↗ zum manuellen Prüfen.' },
+        blocked: { border: 'border-slate-600', badge: 'bg-slate-700 text-slate-400', label: 'NICHT PRÜFBAR', timeColor: 'text-slate-400', hint: 'Browser-Sicherheit verhindert den Check. ↗ manuell prüfen.' },
       }[status] ?? cfg.blocked;
       const timeText = responseTime != null ? `${responseTime} ms` : '—';
 
       return `
-        <div class="bg-slate-800 rounded-xl p-4 border-l-4 ${cfg.border}">
-          <div class="flex items-start justify-between mb-3 gap-2">
-            <div class="flex items-center gap-2 min-w-0">
-              <span class="font-semibold text-slate-100 text-sm leading-snug truncate">${escapeHtml(name)}</span>
+        <div class="bg-slate-800 rounded-lg p-3 border-l-4 ${cfg.border}">
+          <div class="flex items-center justify-between mb-1.5 gap-2">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <span class="font-semibold text-slate-100 text-xs leading-snug truncate">${escapeHtml(name)}</span>
               <a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer"
                 class="shrink-0 text-xs text-slate-400 hover:text-slate-200 transition-colors" title="Seite öffnen">↗</a>
             </div>
-            <span class="shrink-0 text-xs font-medium px-2 py-0.5 rounded-full ${cfg.badge}">${cfg.label}</span>
+            <span class="shrink-0 text-xs font-medium px-1.5 py-0.5 rounded-full ${cfg.badge}">${cfg.label}</span>
           </div>
-          <div class="flex gap-5">
+          <div class="flex gap-4 text-xs">
             <div>
-              <div class="text-xs text-slate-500 uppercase tracking-wide">Antwortzeit</div>
-              <div class="text-base font-semibold ${cfg.timeColor}">${timeText}</div>
+              <div class="text-slate-500">Zeit</div>
+              <div class="font-semibold ${cfg.timeColor}">${timeText}</div>
             </div>
             <div class="min-w-0">
-              <div class="text-xs text-slate-500 uppercase tracking-wide">URL</div>
-              <div class="text-xs text-slate-400 mt-1 truncate">${escapeHtml(url)}</div>
+              <div class="text-slate-500">URL</div>
+              <div class="text-slate-400 truncate">${escapeHtml(url)}</div>
             </div>
           </div>
-          ${cfg.hint ? `<div class="mt-2 text-xs text-slate-500">${cfg.hint}</div>` : ''}
+          ${cfg.hint ? `<div class="mt-1.5 text-xs text-slate-500">${cfg.hint}</div>` : ''}
         </div>
       `;
     }

@@ -10,7 +10,7 @@
 ## Ablauf
 
 1. Repository auschecken (mit `GITHUB_TOKEN`)
-2. Node.js 18 einrichten
+2. Node.js 24 einrichten
 3. `config/projects.json` aus Secret `PROJECTS_CONFIG` erstellen
 4. `node scripts/keepalive.js` ausführen
 5. Git-Benutzer konfigurieren

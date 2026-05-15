@@ -1,5 +1,6 @@
 # Lokale Projektkonfiguration mit echten Keys — niemals committen
 config/projects.json
+config/neon-projects.json
 
 # Node.js
 node_modules/

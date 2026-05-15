@@ -7,6 +7,9 @@
     "keepalive": "node scripts/keepalive.js",
     "test": "node --test tests/*.test.js"
   },
+  "dependencies": {
+    "@neondatabase/serverless": "^0.10.4"
+  },
   "engines": {
     "node": ">=18.0.0"
   }
