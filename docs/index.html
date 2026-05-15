@@ -82,6 +82,17 @@
         .replace(/"/g, '&quot;');
     }
 
+    // Provider-Badge (Supabase / Neon / etc.)
+    function providerBadge(provider) {
+      if (!provider) return '';
+      const styles = {
+        'Supabase': 'bg-emerald-950 text-emerald-400',
+        'Neon':     'bg-sky-950 text-sky-400',
+      };
+      const cls = styles[provider] ?? 'bg-slate-700 text-slate-400';
+      return `<span class="text-xs px-1.5 py-0.5 rounded-full ${cls}">${escapeHtml(provider)}</span>`;
+    }
+
     // Datenbank-Karte rendern
     function renderDbCard(project) {
       const isOk = project.status === 'ok';
@@ -95,7 +106,10 @@
       return `
         <div class="bg-slate-800 rounded-lg p-3 border-l-4 ${borderColor}">
           <div class="flex items-center justify-between mb-2 gap-2">
-            <span class="font-semibold text-slate-100 text-xs leading-snug truncate">${escapeHtml(project.name)}</span>
+            <div class="flex items-center gap-1.5 min-w-0">
+              <span class="font-semibold text-slate-100 text-xs leading-snug truncate">${escapeHtml(project.name)}</span>
+              ${providerBadge(project.provider)}
+            </div>
             <span class="shrink-0 text-xs font-medium px-1.5 py-0.5 rounded-full ${badgeBg}">${badgeText}</span>
           </div>
           <div class="flex gap-4 text-xs">

@@ -25,15 +25,23 @@ export async function pingProject(project) {
     });
     const responseTime = Math.round(performance.now() - start);
     // Alles unter 500 gilt als "erreichbar" — auch 401/404 bedeutet, der Server läuft
-    const base = { name: project.name, ...(project.frontendUrl ? { frontendUrl: project.frontendUrl } : {}) };
+    const provider = detectProvider(project);
+    const base = { name: project.name, ...(provider ? { provider } : {}), ...(project.frontendUrl ? { frontendUrl: project.frontendUrl } : {}) };
     if (response.status < 500) {
       return { ...base, status: 'ok', httpStatus: response.status, responseTime, lastChecked: new Date().toISOString() };
     }
     return { ...base, status: 'error', httpStatus: response.status, responseTime: null, lastChecked: new Date().toISOString(), error: `HTTP ${response.status} ${response.statusText}` };
   } catch (err) {
-    const base = { name: project.name, ...(project.frontendUrl ? { frontendUrl: project.frontendUrl } : {}) };
+    const provider = detectProvider(project);
+    const base = { name: project.name, ...(provider ? { provider } : {}), ...(project.frontendUrl ? { frontendUrl: project.frontendUrl } : {}) };
     return { ...base, status: 'error', httpStatus: null, responseTime: null, lastChecked: new Date().toISOString(), error: err.message };
   }
+}
+
+function detectProvider(project) {
+  if (project.provider) return project.provider;
+  if (project.url?.includes('supabase.co')) return 'Supabase';
+  return null;
 }
 
 // Pingt eine Neon-Datenbank via SELECT 1 und gibt ein Ergebnisobjekt zurück
@@ -45,9 +53,9 @@ export async function pingNeonDatabase(project) {
       sql`SELECT 1`,
       new Promise((_, reject) => setTimeout(() => reject(new Error(`Timeout nach ${NEON_TIMEOUT_MS / 1000}s`)), NEON_TIMEOUT_MS))
     ]);
-    return { name: project.name, status: 'ok', httpStatus: null, responseTime: Math.round(performance.now() - start), lastChecked: new Date().toISOString() };
+    return { name: project.name, provider: 'Neon', status: 'ok', httpStatus: null, responseTime: Math.round(performance.now() - start), lastChecked: new Date().toISOString() };
   } catch (err) {
-    return { name: project.name, status: 'error', httpStatus: null, responseTime: null, lastChecked: new Date().toISOString(), error: err.message };
+    return { name: project.name, provider: 'Neon', status: 'error', httpStatus: null, responseTime: null, lastChecked: new Date().toISOString(), error: err.message };
   }
 }
 
