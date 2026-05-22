@@ -1,13 +1,13 @@
 {
-  "lastRun": "2026-05-19T12:13:12.303Z",
+  "lastRun": "2026-05-22T11:46:54.345Z",
   "projects": [
     {
       "name": "Inventar App",
       "provider": "Supabase",
       "status": "ok",
       "httpStatus": 401,
-      "responseTime": 350,
-      "lastChecked": "2026-05-19T12:13:06.565Z"
+      "responseTime": 293,
+      "lastChecked": "2026-05-22T11:46:50.477Z"
     },
     {
       "name": "App YourStyle",
@@ -15,8 +15,8 @@
       "frontendUrl": "https://yourstyle-seven.vercel.app/dashboard",
       "status": "ok",
       "httpStatus": 401,
-      "responseTime": 101,
-      "lastChecked": "2026-05-19T12:13:06.666Z"
+      "responseTime": 27,
+      "lastChecked": "2026-05-22T11:46:50.505Z"
     },
     {
       "name": "Bubensause",
@@ -24,40 +24,40 @@
       "frontendUrl": "https://bubensause.de",
       "status": "ok",
       "httpStatus": 401,
-      "responseTime": 204,
-      "lastChecked": "2026-05-19T12:13:06.870Z"
+      "responseTime": 157,
+      "lastChecked": "2026-05-22T11:46:50.662Z"
     },
     {
       "name": "Innomee",
       "frontendUrl": "https://innomee.de",
       "status": "ok",
       "httpStatus": 200,
-      "responseTime": 654,
-      "lastChecked": "2026-05-19T12:13:07.524Z"
+      "responseTime": 427,
+      "lastChecked": "2026-05-22T11:46:51.089Z"
     },
     {
       "name": "InnoMee Marketing Agent",
       "frontendUrl": "https://tools.kincon.de",
       "status": "ok",
       "httpStatus": 200,
-      "responseTime": 2868,
-      "lastChecked": "2026-05-19T12:13:10.393Z"
+      "responseTime": 1963,
+      "lastChecked": "2026-05-22T11:46:53.053Z"
     },
     {
       "name": "InnoMee-Marketing DB",
       "provider": "Neon",
       "status": "ok",
       "httpStatus": null,
-      "responseTime": 458,
-      "lastChecked": "2026-05-19T12:13:10.851Z"
+      "responseTime": 325,
+      "lastChecked": "2026-05-22T11:46:53.378Z"
     },
     {
       "name": "DesignYOU DB",
       "provider": "Neon",
       "status": "ok",
       "httpStatus": null,
-      "responseTime": 1452,
-      "lastChecked": "2026-05-19T12:13:12.303Z"
+      "responseTime": 967,
+      "lastChecked": "2026-05-22T11:46:54.345Z"
     }
   ]
 }
