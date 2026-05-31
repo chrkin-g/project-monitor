@@ -1,13 +1,13 @@
 {
-  "lastRun": "2026-05-28T12:29:28.289Z",
+  "lastRun": "2026-05-31T10:59:44.891Z",
   "projects": [
     {
       "name": "Inventar App",
       "provider": "Supabase",
       "status": "ok",
       "httpStatus": 401,
-      "responseTime": 201,
-      "lastChecked": "2026-05-28T12:29:22.799Z"
+      "responseTime": 313,
+      "lastChecked": "2026-05-31T10:59:29.781Z"
     },
     {
       "name": "App YourStyle",
@@ -15,8 +15,8 @@
       "frontendUrl": "https://yourstyle-seven.vercel.app/dashboard",
       "status": "ok",
       "httpStatus": 401,
-      "responseTime": 59,
-      "lastChecked": "2026-05-28T12:29:22.858Z"
+      "responseTime": 30,
+      "lastChecked": "2026-05-31T10:59:29.811Z"
     },
     {
       "name": "Bubensause",
@@ -24,40 +24,41 @@
       "frontendUrl": "https://bubensause.de",
       "status": "ok",
       "httpStatus": 401,
-      "responseTime": 140,
-      "lastChecked": "2026-05-28T12:29:22.998Z"
+      "responseTime": 113,
+      "lastChecked": "2026-05-31T10:59:29.925Z"
     },
     {
       "name": "Innomee",
       "frontendUrl": "https://innomee.de",
-      "status": "ok",
-      "httpStatus": 200,
-      "responseTime": 477,
-      "lastChecked": "2026-05-28T12:29:23.476Z"
+      "status": "error",
+      "httpStatus": null,
+      "responseTime": null,
+      "lastChecked": "2026-05-31T10:59:40.030Z",
+      "error": "fetch failed"
     },
     {
       "name": "InnoMee Marketing Agent",
       "frontendUrl": "https://tools.kincon.de",
       "status": "ok",
       "httpStatus": 200,
-      "responseTime": 1550,
-      "lastChecked": "2026-05-28T12:29:25.026Z"
+      "responseTime": 1607,
+      "lastChecked": "2026-05-31T10:59:41.637Z"
     },
     {
       "name": "InnoMee-Marketing DB",
       "provider": "Neon",
       "status": "ok",
       "httpStatus": null,
-      "responseTime": 377,
-      "lastChecked": "2026-05-28T12:29:25.403Z"
+      "responseTime": 398,
+      "lastChecked": "2026-05-31T10:59:42.035Z"
     },
     {
       "name": "DesignYOU DB",
       "provider": "Neon",
       "status": "ok",
       "httpStatus": null,
-      "responseTime": 2885,
-      "lastChecked": "2026-05-28T12:29:28.288Z"
+      "responseTime": 2855,
+      "lastChecked": "2026-05-31T10:59:44.891Z"
     }
   ]
 }
