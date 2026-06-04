@@ -1,13 +1,13 @@
 {
-  "lastRun": "2026-06-01T15:24:24.354Z",
+  "lastRun": "2026-06-04T11:56:31.129Z",
   "projects": [
     {
       "name": "Inventar App",
       "provider": "Supabase",
       "status": "ok",
       "httpStatus": 401,
-      "responseTime": 258,
-      "lastChecked": "2026-06-01T15:24:07.516Z"
+      "responseTime": 203,
+      "lastChecked": "2026-06-04T11:56:21.685Z"
     },
     {
       "name": "App YourStyle",
@@ -15,8 +15,8 @@
       "frontendUrl": "https://yourstyle-seven.vercel.app/dashboard",
       "status": "ok",
       "httpStatus": 401,
-      "responseTime": 44,
-      "lastChecked": "2026-06-01T15:24:07.561Z"
+      "responseTime": 93,
+      "lastChecked": "2026-06-04T11:56:21.778Z"
     },
     {
       "name": "Bubensause",
@@ -24,41 +24,32 @@
       "frontendUrl": "https://bubensause.de",
       "status": "ok",
       "httpStatus": 401,
-      "responseTime": 137,
-      "lastChecked": "2026-06-01T15:24:07.698Z"
-    },
-    {
-      "name": "Innomee",
-      "frontendUrl": "https://innomee.de",
-      "status": "error",
-      "httpStatus": null,
-      "responseTime": null,
-      "lastChecked": "2026-06-01T15:24:17.786Z",
-      "error": "fetch failed"
+      "responseTime": 218,
+      "lastChecked": "2026-06-04T11:56:21.996Z"
     },
     {
       "name": "InnoMee Marketing Agent",
       "frontendUrl": "https://tools.kincon.de",
       "status": "ok",
       "httpStatus": 200,
-      "responseTime": 3422,
-      "lastChecked": "2026-06-01T15:24:21.209Z"
+      "responseTime": 5621,
+      "lastChecked": "2026-06-04T11:56:27.617Z"
     },
     {
       "name": "InnoMee-Marketing DB",
       "provider": "Neon",
       "status": "ok",
       "httpStatus": null,
-      "responseTime": 328,
-      "lastChecked": "2026-06-01T15:24:21.537Z"
+      "responseTime": 569,
+      "lastChecked": "2026-06-04T11:56:28.187Z"
     },
     {
       "name": "DesignYOU DB",
       "provider": "Neon",
       "status": "ok",
       "httpStatus": null,
-      "responseTime": 2816,
-      "lastChecked": "2026-06-01T15:24:24.354Z"
+      "responseTime": 2941,
+      "lastChecked": "2026-06-04T11:56:31.128Z"
     }
   ]
 }
