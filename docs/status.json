@@ -1,13 +1,13 @@
 {
-  "lastRun": "2026-06-13T11:15:53.026Z",
+  "lastRun": "2026-06-16T14:12:39.500Z",
   "projects": [
     {
       "name": "Inventar App",
       "provider": "Supabase",
       "status": "ok",
       "httpStatus": 401,
-      "responseTime": 201,
-      "lastChecked": "2026-06-13T11:15:46.083Z"
+      "responseTime": 276,
+      "lastChecked": "2026-06-16T14:12:33.521Z"
     },
     {
       "name": "App YourStyle",
@@ -15,8 +15,8 @@
       "frontendUrl": "https://yourstyle-seven.vercel.app/dashboard",
       "status": "ok",
       "httpStatus": 401,
-      "responseTime": 53,
-      "lastChecked": "2026-06-13T11:15:46.136Z"
+      "responseTime": 75,
+      "lastChecked": "2026-06-16T14:12:33.596Z"
     },
     {
       "name": "Bubensause",
@@ -24,32 +24,32 @@
       "frontendUrl": "https://bubensause.de",
       "status": "ok",
       "httpStatus": 401,
-      "responseTime": 168,
-      "lastChecked": "2026-06-13T11:15:46.305Z"
+      "responseTime": 205,
+      "lastChecked": "2026-06-16T14:12:33.801Z"
     },
     {
       "name": "InnoMee Marketing Agent",
       "frontendUrl": "https://tools.kincon.de",
       "status": "ok",
       "httpStatus": 200,
-      "responseTime": 3510,
-      "lastChecked": "2026-06-13T11:15:49.815Z"
+      "responseTime": 2553,
+      "lastChecked": "2026-06-16T14:12:36.354Z"
     },
     {
       "name": "InnoMee-Marketing DB",
       "provider": "Neon",
       "status": "ok",
       "httpStatus": null,
-      "responseTime": 394,
-      "lastChecked": "2026-06-13T11:15:50.209Z"
+      "responseTime": 323,
+      "lastChecked": "2026-06-16T14:12:36.678Z"
     },
     {
       "name": "DesignYOU DB",
       "provider": "Neon",
       "status": "ok",
       "httpStatus": null,
-      "responseTime": 2817,
-      "lastChecked": "2026-06-13T11:15:53.026Z"
+      "responseTime": 2822,
+      "lastChecked": "2026-06-16T14:12:39.500Z"
     }
   ]
 }
